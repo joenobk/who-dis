@@ -2,6 +2,24 @@
 
 > **The Diary.** Append a new entry after every work session. Never delete old entries.
 
+## 2026-08-31 — Removed a legacy workspace guide file from the repository
+
+**What was done**
+
+- Removed the long-form workspace architecture guide file from the project per user request.
+- Rewrote all of `main`'s git history (`git filter-branch --index-filter` + `--prune-empty`) so the file is absent from every commit — no trace remains in the published repository.
+- Purged local backup refs/reflogs and force-pushed the rewritten history to GitHub.
+
+**Why**
+
+- The user asked for the file to be gone, including any historical evidence of it.
+
+**Results**
+
+- Verified: the file is absent from all published commits (exact-name check across the full history) and from the GitHub tree. The shorter companion guide remains in place.
+
+---
+
 ## 2026-08-31 — Scrubbed real API endpoint from git history
 
 **What was done**
