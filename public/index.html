@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="WHO DIS? — a multiplayer detective guessing game where you grill your opponent with free-form yes/no questions about facial features and identity until you can name their person.">
+  <title>WHO DIS?</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️</text></svg>">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ============ MENU ============ -->
+    <section id="screen-menu" class="screen">
+      <h1 class="logo">WHO <span>DIS</span>?</h1>
+      <p class="tagline">A detective game of faces, features &amp; tiny tells.</p>
+
+      <div class="menu-buttons">
+        <button class="menu-btn primary" id="btn-bot">🤖 Practice vs Bot</button>
+        <button class="menu-btn" id="btn-create">🕵️ Create Room</button>
+        <button class="menu-btn" id="btn-join">🔎 Join Room</button>
+      </div>
+
+      <div class="join-box hidden" id="join-box">
+        <input id="join-code" placeholder="ROOM CODE" maxlength="6" autocomplete="off">
+        <button id="btn-join-go">Join</button>
+        <div id="join-error" class="error-text"></div>
+      </div>
+
+      <div class="profile-row">
+        <label for="player-name">Detective name</label>
+        <input id="player-name" maxlength="20" placeholder="Sherlock">
+        <span class="points-badge">🪙 <b id="points-val">0</b></span>
+              <button class="mini-btn" id="btn-settings" title="AI settings">⚙</button>
+            </div>
+
+      <div class="woke-toggle">
+        <label class="switch">
+          <input type="checkbox" id="woke-toggle">
+          <span class="slider"></span>
+        </label>
+        <div>
+          <div class="wt-title">🌊 Woke Mode</div>
+          <div class="wt-sub" id="woke-sub">OFF — binary &amp; consistent, solvable &amp; calm.</div>
+        </div>
+      </div>
+
+      <div class="pack-section">
+        <h2>📦 Character Packs <button id="btn-how" class="mini-btn">?</button></h2>
+        <div id="howto" class="howto hidden">
+          <p><b>How to play:</b> both detectives get a secret person. On your turn, type any
+          <b>yes/no question</b> about <b>your opponent's</b> person — facial features,
+          identity, vibes, whatever. Your opponent studies their picture and answers.
+          Then <b>you</b> eliminate every person who doesn't match, tapping cards to
+          inspect them up close. When only one candidate remains, guess their name —
+          a wrong guess is an instant loss.</p>
+          <p><b>Identity is on the badge:</b> cards show pronouns (she/her, he/him, they/them).
+          Asking "is your person a woman?" is about <i>identity</i>; "is your person female?"
+          is about <i>appearance</i>. They are not the same thing. In Woke Mode they are
+          <b>periodically not the same thing</b>. Tread carefully.</p>
+          <p><b>Tough packs</b> (Sweden, Cameroon, Saudi Arabia, South India, Lookalikes)
+          make everyone look alike — dig into earlobes, eyebrow thickness and nose bridges.
+          Win matches to earn 🪙 and unlock packs.</p>
+        </div>
+        <div id="pack-list"></div>
+        <p id="selected-pack" class="selected-pack"></p>
+      </div>
+    </section>
+
+    <!-- ============ LOBBY ============ -->
+    <section id="screen-lobby" class="screen hidden">
+      <div class="lobby-card">
+        <h2>Room <span class="code" id="room-code"></span>
+          <button class="mini-btn" id="btn-copy" title="Copy code">📋</button>
+        </h2>
+        <p class="hint">Share this code (or the link) so your opponent can join on any device.</p>
+        <div id="lobby-players" class="lobby-players"></div>
+        <div class="pack-picker">
+          <span class="label">Pack:</span>
+          <button class="mini-btn" id="btn-pack-prev">‹</button>
+          <span id="lobby-pack-name" class="pack-name"></span>
+          <button class="mini-btn" id="btn-pack-next">›</button>
+          <button class="mini-btn" id="btn-pack-details" title="Pack info">💡</button>
+        </div>
+        <p id="lobby-pack-tagline" class="hint"></p>
+        <div class="woke-toggle lobby">
+          <label class="switch">
+            <input type="checkbox" id="lobby-woke">
+            <span class="slider"></span>
+          </label>
+          <div>
+            <div class="wt-title">🌊 Woke Mode</div>
+            <div class="wt-sub">Identity ≠ appearance. Often. +2🪙 bonus.</div>
+          </div>
+        </div>
+        <div class="lobby-actions">
+          <button class="menu-btn primary" id="btn-start">▶ Start Match</button>
+          <button class="menu-btn" id="btn-leave">Leave</button>
+        </div>
+        <div id="lobby-error" class="error-text"></div>
+      </div>
+    </section>
+
+    <!-- ============ GAME ============ -->
+    <section id="screen-game" class="screen hidden">
+      <header class="game-header">
+        <div class="seat-row">
+          <span class="chip" id="you-chip"></span>
+          <span class="vs">vs</span>
+          <span class="chip" id="opp-chip"></span>
+        </div>
+        <div class="turn-banner" id="turn-banner">…</div>
+        <div class="think-slogan" id="think-slogan"></div>
+        <div class="status-row">
+          <span id="remaining" class="remaining">20 possible</span>
+                  <span id="turn-timer" class="turn-timer"></span>
+                  <span id="opp-status" class="opp-status"></span>
+                </div>
+      </header>
+
+      <div class="target-tray">
+        <div class="tray-label">🕵️ <b>Your person</b> — keep it secret</div>
+        <div id="target-card" class="target-card"></div>
+      </div>
+
+      <div id="board" class="board"></div>
+
+      <!-- ===== ASK BAR ===== -->
+      <div class="question-bar hidden" id="ask-bar">
+        <div class="q-row">
+          <input id="q-text" class="q-input" placeholder='Type a yes/no question… e.g. "does your person have a beard?"' maxlength="240" autocomplete="off">
+        </div>
+              <div id="eliminate-row" class="elim-row hidden">
+                <span class="ans-q">Their answer: <b id="elim-answer" class="elim-answer">YES</b> — auto-eliminate by:</span>
+                <div class="q-row">
+                  <select id="elim-trait"></select>
+                  <div class="chips" id="elim-values"></div>
+                  <button id="btn-elim-apply" class="mini-btn primary mini-apply" disabled>🎯 Apply</button>
+                  <button id="btn-elim-dismiss" class="mini-btn">✕</button>
+                </div>
+              </div>
+              <div class="q-row">
+                <button id="btn-suggest" class="mini-btn" title="Suggest the best question">💡 Suggest</button>
+                <span class="chip-label">Quick traits:</span>
+                <div class="chips" id="trait-chips"></div>
+                <button id="btn-pass" class="mini-btn" title="Skip your question">Pass</button>
+              </div>
+              <div class="q-row">
+                <button id="btn-ask" class="menu-btn primary" disabled>▶ Ask</button>
+                <button id="btn-guess-mode" class="mini-btn danger" title="Guess a name">🔫 Guess</button>
+                <span id="ask-hint" class="hint">Ask anything — they have to judge it.</span>
+              </div>
+            </div>
+
+      <!-- ===== ANSWER BAR ===== -->
+      <div class="question-bar ans hidden" id="ans-bar">
+        <div class="ans-q">They asked:</div>
+        <div class="ans-text" id="ans-text">…</div>
+        <div class="ans-target" id="ans-target"></div>
+        <div class="q-row">
+          <button id="btn-ans-no" class="menu-btn ans-no">✗ NO</button>
+                <button id="btn-ans-dunno" class="menu-btn ans-dunno">⍰ Don't know</button>
+          <button id="btn-ans-yes" class="menu-btn primary ans-yes">✓ YES</button>
+        </div>
+      </div>
+
+      <div id="log" class="log"></div>
+    </section>
+
+    <!-- ============ INSPECT MODAL ============ -->
+    <div id="screen-inspect" class="modal hidden">
+      <div class="modal-card wide">
+        <div id="inspect-pic"></div>
+        <div id="inspect-name" class="nm"></div>
+        <div id="inspect-badge" class="badge-line"></div>
+        <div class="modal-actions">
+          <button class="menu-btn" id="btn-inspect-flip">🚫 Eliminate</button>
+          <button class="menu-btn primary" id="btn-inspect-guess">🔫 Guess</button>
+          <button class="menu-btn" id="btn-inspect-close">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ END OVERLAY ============ -->
+    <div id="screen-end" class="overlay hidden">
+      <div class="end-card">
+        <h2 id="end-title"></h2>
+        <div id="end-target" class="end-target"></div>
+        <p id="end-sub" class="end-sub"></p>
+        <p id="end-points" class="end-points"></p>
+        <div class="end-actions">
+          <button class="menu-btn primary" id="btn-rematch">↻ Rematch</button>
+          <button class="menu-btn" id="btn-back-menu">☰ Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SETTINGS MODAL ============ -->
+        <div id="settings-modal" class="modal hidden">
+          <div class="modal-card">
+            <h3>⚙ AI Settings</h3>
+            <p class="hint" style="text-align:left">Optional: plug in any OpenAI-compatible chat API and the bot will answer with a real model — and automatically eliminate the cards your questions rule out. Leave blank to use the built-in judge.</p>
+            <div class="settings-field">
+              <label>API URL</label>
+              <input id="set-url" type="text" placeholder="https://api.openai.com/v1/chat/completions" autocomplete="off">
+            </div>
+            <div class="settings-field">
+              <label>API Key</label>
+              <input id="set-key" type="password" placeholder="sk-…" autocomplete="off">
+            </div>
+            <div class="settings-field">
+              <label>Model</label>
+              <input id="set-model" type="text" placeholder="gpt-4o-mini" autocomplete="off">
+            </div>
+            <div class="settings-field check">
+              <label class="check-label">
+                <input type="checkbox" id="set-autoelim">
+                🤖 Auto-eliminate my board from my questions (AI maps my question → trait and flips the cards it rules out)
+              </label>
+            </div>
+            <p id="set-status" class="hint"></p>
+            <div class="modal-actions">
+              <button class="menu-btn" id="btn-settings-cancel">Cancel</button>
+              <button class="menu-btn primary" id="btn-settings-save">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ CONFIRM MODAL ============ -->
+        <div id="modal" class="modal hidden">
+      <div class="modal-card">
+        <h3 id="modal-title"></h3>
+        <p id="modal-text"></p>
+        <div class="modal-actions">
+          <button class="menu-btn" id="modal-cancel">Cancel</button>
+          <button class="menu-btn primary" id="modal-ok">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="facegen.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# Secrets / local env
+.env
+settings.json
+prefs.json
+
+# Node
+node_modules/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Render output
+.render-out/

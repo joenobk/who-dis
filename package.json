@@ -1,0 +1,23 @@
+{
+  "name": "who-dis",
+  "version": "1.0.0",
+  "description": "Who Dis? — a multiplayer Guess-Who-style detective game with procedurally generated diverse character packs.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+      "test": "node test/engine-sim.js && node test/render-exhaustive.js && node test/smoke.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^1.0.8",
+    "socket.io-client": "^4.7.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
