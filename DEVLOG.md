@@ -2,6 +2,25 @@
 
 > **The Diary.** Append a new entry after every work session. Never delete old entries.
 
+## 2026-08-31 — Moved the project to GitHub
+
+**What was done**
+
+- Initialized the folder as a git repository (branch `main`) and created a **private** GitHub repo: **https://github.com/joenobk/who-dis**.
+- Set local git identity from the GitHub account (Joseph Bennett <joenobk@users.noreply.github.com> — noreply address keeps the real email private).
+- Initial commit `999b49b` includes the full project and workspace docs; pushed to `origin/main`.
+
+**Why / decisions**
+
+- `.gitignore` already covered `.env`, `prefs.json`, `settings.json`, `node_modules/`, `.render-out/` — verified **before** committing that no secret file was staged (`git ls-files` check).
+- Repo created **private** — flip to public anytime with `gh repo edit joenobk/who-dis --visibility public`.
+
+**Results**
+
+- `origin` = https://github.com/joenobk/who-dis.git; remote `main` matches local HEAD; working tree clean.
+
+---
+
 ## 2026-08-31 — Longer LLM timeout (Ollama VRAM reload) + "thinking" slogans
 
 **What was done**

@@ -5,6 +5,7 @@
 ## Current State (as of 2026-08-31)
 
 - **Who Dis?** is feature-complete and stable. **All tests pass** (`npm test` exits 0: engine sim, render-exhaustive, socket smoke — zero FAILs).
+- **Now on GitHub**: private repo **https://github.com/joenobk/who-dis** (branch `main`, origin pushed). `.env` and other secret/settings files are gitignored and untracked.
 - **LLM timeout is 20s** (`lib/llm.js` default + `.env` `LLM_TIMEOUT_MS=20000`) — a local model (Ollama) gets time to reload into VRAM before the judge fallback kicks in.
 - **Thinking slogans shipped**: the server broadcasts `type:'thinking'` when a bot turn is scheduled; the client rotates clever diversity/homeland one-liners under the turn banner while the bot works (bot opponents only), cleared on the next game event.
 - **Workspace docs are in place** (per `Simple_AI_Workspace_Architecture_Guide_v5.md`): `PRD.md`, `.instructions.md`, `DEVLOG.md`, `CONTEXT.md`, and the gitignored `.env`.
@@ -16,11 +17,10 @@
 
 ## Current Task
 
-**DONE — LLM timeout + thinking slogans:**
-- ✅ Timeout raised to 20s (`lib/llm.js`, `.env`, `.env.example`)
-- ✅ Server broadcasts `thinking` event on bot turns
-- ✅ Client rotates 10 clever slogans (diversity/homelands theme) while waiting on the bot
-- ✅ Smoke test covers the thinking event; `npm test` green
+**DONE — GitHub setup:**
+- ✅ git repo initialized (branch `main`), local identity set
+- ✅ Initial commit pushed to **https://github.com/joenobk/who-dis** (private)
+- ✅ Verified: no secret files tracked, remote matches local HEAD, tree clean
 
 ## Next Step (pending)
 
