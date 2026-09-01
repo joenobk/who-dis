@@ -6,6 +6,7 @@
 
 - **Who Dis?** is feature-complete and stable. **All tests pass** (`npm test` exits 0: engine sim, render-exhaustive, socket smoke — zero FAILs).
 - **Now on GitHub**: private repo **https://github.com/joenobk/who-dis** (branch `main`, origin pushed). `.env` and other secret/settings files are gitignored and untracked.
+- **`.env.example` is sanitized**: placeholders only (`api_location_here` / `your_key_here`); the real endpoint + key were scrubbed from all published history via history rewrite.
 - **LLM timeout is 20s** (`lib/llm.js` default + `.env` `LLM_TIMEOUT_MS=20000`) — a local model (Ollama) gets time to reload into VRAM before the judge fallback kicks in.
 - **Thinking slogans shipped**: the server broadcasts `type:'thinking'` when a bot turn is scheduled; the client rotates clever diversity/homeland one-liners under the turn banner while the bot works (bot opponents only), cleared on the next game event.
 - **Workspace docs are in place** (per `Simple_AI_Workspace_Architecture_Guide_v5.md`): `PRD.md`, `.instructions.md`, `DEVLOG.md`, `CONTEXT.md`, and the gitignored `.env`.
@@ -17,10 +18,14 @@
 
 ## Current Task
 
-**DONE — GitHub setup:**
-- ✅ git repo initialized (branch `main`), local identity set
-- ✅ Initial commit pushed to **https://github.com/joenobk/who-dis** (private)
-- ✅ Verified: no secret files tracked, remote matches local HEAD, tree clean
+**DONE — .env.example sanitization:**
+- ✅ `git filter-branch` scrubbed the real API URL + key from `.env.example` in all `main` history (both old commits now show placeholders)
+- ✅ Sanitized `.env.example` committed (`b5d186c`) and force-pushed to GitHub
+- ✅ Verified: remote `main` (3 commits) contains zero matches for the real endpoint/key
+- ✅ Local garbage collected (`refs/original` removed, reflogs expired, `git gc --prune=now`)
+- ⏳ Old SHAs (`999b49b…`, `4437c98…`) remain as unreachable dangling objects on GitHub until its GC runs (hours) — not in any branch/UI
+- ℹ️ Local session checkpoints (`refs/copilot/checkpoints/*`) still hold the old file but are local-only, never pushed
+- ℹ️ `.instructions.md` rule #4 added: placeholders only in `.env.example`
 
 ## Next Step (pending)
 
@@ -36,5 +41,6 @@ Pick the first real improvement from this list (ask the user or take the top one
 
 - [ ] `npm test` passes
 - [ ] `.env` untouched by commits; no secrets in client code or logs
+- [ ] `.env.example` contains placeholders only (no real endpoints/keys)
 - [ ] DEVLOG.md appended with today's entry
 - [ ] This file updated with the next step

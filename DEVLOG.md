@@ -2,6 +2,35 @@
 
 > **The Diary.** Append a new entry after every work session. Never delete old entries.
 
+## 2026-08-31 — Scrubbed real API endpoint from git history
+
+**What was done**
+
+- The `.env.example` checked into history accidentally contained the **real** LLM API URL and API key (an internal `http://…:30881/api/v1/chat/completions` endpoint and its `sk-…` key). The user replaced the working-copy file with placeholders.
+- Committed the sanitized `.env.example` (`LLM_API_URL=api_location_here`, `LLM_API_KEY=your_key_here`).
+- **Rewrote git history** on `main` with `git filter-branch` to scrub the endpoint + key from `.env.example` in *every* historical commit (initial + docs commits now show placeholders).
+- Purged the old objects locally: removed `refs/original` backup refs, expired reflogs, `git gc --prune=now`.
+- **Force-pushed** the rewritten history to GitHub (`4437c98...b5d186c main -> main (forced update)`).
+
+**Why**
+
+- Secrets-checking hygiene: the example file is a template and must never contain a live endpoint or key. Rewriting the history (not just editing the tip) removes the secret from every published commit.
+
+**Errors found & fixed**
+
+| Error | Fix |
+|---|---|
+| `.env.example` in history (2 commits) contained real URL + API key | `git filter-branch` scrub + force-push |
+
+**Results / notes**
+
+- Re-reachable `main` (3 commits) is fully sanitized; GitHub API confirms the placeholder at the initial commit and current tip.
+- The old SHAs (`999b49b…`, `4437c98…`) remain as unreachable dangling objects on GitHub until their garbage collection runs (usually within hours) — API resolution by SHA may work until then. They are not visible in the UI, not in any branch, and require the exact SHA to fetch.
+- Local `refs/copilot/checkpoints/*` (app-managed session checkpoints) historically contain the old `.env.example`; these are local-only, never pushed, and left untouched.
+- **Rule added:** never put real endpoints/keys in `.env.example` — placeholders only (`.instructions.md` reinforced).
+
+---
+
 ## 2026-08-31 — Moved the project to GitHub
 
 **What was done**
